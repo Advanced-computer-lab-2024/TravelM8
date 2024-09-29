@@ -17,6 +17,7 @@ const activitySchema = new mongoose.Schema({
     
     price: {
         type: mongoose.Schema.Types.Mixed,
+        required: true,
         validate: {
             validator: (v) => {
                 return (
@@ -26,6 +27,7 @@ const activitySchema = new mongoose.Schema({
             },
             message : "Insert a valid price range!"
         }
+        
     },
 
     date: {
@@ -39,9 +41,10 @@ const activitySchema = new mongoose.Schema({
         //include an array of categories available
     },
 
-    tags: {
-        type: Array,
-    },
+    tags: [{
+        type: String,
+        required: true
+    }],
 
     discount: {
         type: Number,
