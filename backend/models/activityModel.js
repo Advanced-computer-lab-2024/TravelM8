@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const activitySchema = new mongoose.Schema({
+
     title: {
         type: String,
         required: true,
@@ -8,7 +9,12 @@ const activitySchema = new mongoose.Schema({
 
     description: {
         type: String,
-        required: true
+        required: true,
+    },
+
+    date: {
+        type: Date,
+        required: true,
     },
 
     location: {
@@ -17,6 +23,7 @@ const activitySchema = new mongoose.Schema({
     
     price: {
         type: mongoose.Schema.Types.Mixed,
+        required: true,
         validate: {
             validator: (v) => {
                 return (
@@ -25,13 +32,10 @@ const activitySchema = new mongoose.Schema({
                 );
             },
             message : "Insert a valid price range!"
-        }
+        },
+        
     },
 
-    date: {
-        type: Date,
-        required: true,
-    },
 
     category: {
         type: String,
@@ -39,9 +43,10 @@ const activitySchema = new mongoose.Schema({
         //include an array of categories available
     },
 
-    tags: {
-        type: Array,
-    },
+    tags: [{
+        type: String,
+        required: true,
+    }],
 
     discount: {
         type: Number,
