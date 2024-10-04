@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tourist Registration</title>
+    <style>
+      /* Same styles as before */
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+      }
+      h1 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+      }
+      .container {
+        text-align: center;
+        padding: 40px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 400px;
+      }
+      .form-group {
+        margin-bottom: 20px;
+        position: relative;
+      }
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      input[type="text"]:focus,
+      input[type="password"]:focus {
+        border-color: #007bff;
+        outline: none;
+      }
+      .eye-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+      }
+      .buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+      .register-button,
+      .back-button {
+        text-decoration: none;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        display: inline-block;
+        transition: background-color 0.3s;
+      }
+      .register-button:hover,
+      .back-button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+    <script>
+      async function registerTourist(event) {
+        event.preventDefault();
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        try {
+          const response = await fetch("/tourist/register-tourist", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            alert(result.message); // Alert the error message
+          } else {
+            alert(result.message); // Alert success message
+            document.getElementById("registerForm").reset();
+          }
+        } catch (error) {
+          alert("Registration failed. Please try again.");
+          console.error("Error during registration:", error);
+        }
+      }
+
+      function togglePasswordVisibility() {
+        const passwordField = document.getElementById("password");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        if (passwordField.type === "password") {
+          passwordField.type = "text"; // Show password
+          eyeIcon.src = "eye-open.png"; // Change icon to eye open
+        } else {
+          passwordField.type = "password"; // Hide password
+          eyeIcon.src = "eye-close.png"; // Change icon to eye close
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Tourist Registration</h1>
+      <form id="registerForm" onsubmit="registerTourist(event)">
+        <div class="form-group">
+          <input type="text" id="username" placeholder="Username" required />
+        </div>
+        <div class="form-group">
+          <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            required
+          />
+          <img
+            id="eyeIcon"
+            src="eye-close.png"
+            alt="Toggle Password Visibility"
+            class="eye-icon"
+            onclick="togglePasswordVisibility()"
+          />
+        </div>
+        <div class="buttons">
+          <button type="submit" class="register-button">Register</button>
+          <a href="/user" class="back-button">Back to Landing Page</a>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

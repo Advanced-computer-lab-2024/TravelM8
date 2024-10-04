@@ -1,15 +1,13 @@
-
 import express from 'express';
-import { createUser, updateUser, getUsers } from '../controllers/advertiserController.js'; // Add .js extension
+import { createAdvertiser, updateAdvertiser, getAdvertisers } from '../controllers/advertiserController.js'; // Add .js extension
 
-const routerAdvertiser = express.Router();
+const router = express.Router();
 
 // Define the routes
-routerAdvertiser.post('/addAdvertiser', createUser);      // Create a new user with website, hotline, etc.
-routerAdvertiser.put('/updateAdvertiser/:username', updateUser);       // Update user information by email
-routerAdvertiser.get('/getAdvertisers', getUsers);         // Read user by email
+router.post('/advertisers', createAdvertiser);      // Create a new user with website, hotline, etc.
+router.put('/advertisers/:username', updateAdvertiser);       // Update user information by email
+router.get('/advertisers', getAdvertisers);         // Read user by email
 
-export default routerAdvertiser;                  // Export router as default
-
+export default router;
 
 

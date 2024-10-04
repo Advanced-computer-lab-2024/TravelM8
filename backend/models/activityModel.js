@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
+import ActivityCategory from './activityCategoryModel.js';
+import PreferenceTag from './preferenceTagModel.js';
+import Advertiser from './advertiserModel.js'
 
 const activitySchema = new mongoose.Schema({
+
     title: {
         type: String,
         required: true,
@@ -8,11 +12,16 @@ const activitySchema = new mongoose.Schema({
 
     description: {
         type: String,
-        required: true
+        required: true,
+    },
+
+    date: {
+        type: Date,
+        required: true,
     },
 
     location: {
-
+        //google maps
     },
     
     price: {
@@ -25,23 +34,21 @@ const activitySchema = new mongoose.Schema({
                 );
             },
             message : "Insert a valid price range!"
-        }
-    },
-
-    date: {
-        type: Date,
-        required: true,
+        },
+        
     },
 
     category: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ActivityCategory',
         required: true,
-        //include an array of categories available
     },
 
-    tags: {
-        type: Array,
-    },
+    tags: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PreferenceTag',
+        required: true,
+    }],
 
     discount: {
         type: Number,
@@ -59,7 +66,7 @@ const activitySchema = new mongoose.Schema({
 
     advertiserId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Advertiser',
         required: true,
     },
     

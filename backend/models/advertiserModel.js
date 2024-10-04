@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import validator from "validator";
 
 const advertiserSchema = new mongoose.Schema({
   username: {
@@ -7,15 +8,25 @@ const advertiserSchema = new mongoose.Schema({
     required: true,
     unique: true,
     immutable: true,
+    match: /^[a-zA-Z0-9]{3,16}$/,
   },
   email: {
     type: String,
     required: true,
     unique: true,
+    validate: {
+      validator: (email) => validator.isEmail(email), // Using Validator.js
+      message: 'Please enter a valid email address.',
+  },
   },
   password: {
     type: String,
+    minlength : 6,
     required: true,
+    validate: function(value) {
+      // Regular expression to check if the password has at least one letter and one number
+      return /[a-zA-Z]/.test(value) && /\d/.test(value);
+    }
   },
   website: {
     type: String,
@@ -24,10 +35,6 @@ const advertiserSchema = new mongoose.Schema({
     type: Number,
   },
   
-  isAccepted: {
-    type: Boolean,
-    default: false,
-  },
  
 }, 
     { 

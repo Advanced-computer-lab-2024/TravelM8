@@ -1,10 +1,11 @@
 import express from 'express';
-const routerSeller = express.Router();
-import { createUser, updateUser, getUsers } from '../controllers/sellerController.js';
+import { createSeller, updateSeller, getSellers } from '../controllers/sellerController.js';
+
+const router = express.Router();
 
 // Define the routes
-routerSeller.post('/addSeller', createUser);              // Create a new user with website, hotline, etc.
-routerSeller.put('/updateSeller/:username', updateUser);        // Update user information by email
-routerSeller.get('/getSellers', getUsers);                 // Read user by email
+router.post('/sellers', createSeller);              // Create a new user with website, hotline, etc.
+router.put('/sellers/:username', updateSeller);        // Update user information by email
+router.get('/sellers', getSellers);                 // Read user by email
 
-export default routerSeller; 
+export default router; 
