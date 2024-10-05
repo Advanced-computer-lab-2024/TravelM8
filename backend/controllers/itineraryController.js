@@ -1,10 +1,11 @@
-const Itinerary = require('../models/itineraryModel.js');
-const Activity = require('../models/activityModel.js');
+import Itinerary from '../models/itineraryModel.js';
+import Activity from '../models/activityModel.js';
+import historicalPlaces from '../models/historicalPlacesModel.js'
 
 //const { default: mongoose } = require('mongoose');
 
 //create new itinerary 
-const createItinerary = async (req, res) => {
+export const createItinerary = async (req, res) => {
     try {
         const newItinerary = new Itinerary(req.body); // Create a new instance of the Itinerary model
         await newItinerary.save(); // Save the new itinerary to the database
@@ -17,18 +18,38 @@ const createItinerary = async (req, res) => {
 };
 
 // read/retrieve all itineraries 
-const readItineraries = async (req, res) => {
+export const readItineraries = async (req, res) => {
     try {
-        const itineraries = await Itinerary.find().populate('activities'); // Fetch all itineraries and populate activities
+        const { upcoming } = req.query;
+        const filters = {};
+
+        if (upcoming === 'true')
+            filters['availableSlots.startTime'] = { $gte: new Date() };
+
+        const itineraries = await Itinerary.find(filters).populate('activities'); // Fetch all itineraries and populate activities
         res.status(200).json(itineraries); // Send the list of itineraries in the response
     } catch (error) {
         res.status(500).json({
              message: 'Error fetching itineraries', error: error.message }); // Send error response if something goes wrong
     }
 };
+   //TourGuide only
+   export const getMyItineraries = async(req, res) => {    
+    let itineraries;
+    if(user.type === "TourGuide"){
+        itineraries = await Itinerary.find({tourGuideId: user.id}).populate('activities').populate(
+            'historicalSites');
+        if(itineraries.length == 0)
+            res.status(204);
+        else
+            res.status(200).json({itineraries});
+    }else{
+        res.status(400).json({message:"enter a valid id"});
+    }
+  };
 
 // update an itinerary in the database
-const updateItinerary = async (req, res) => {
+export const updateItinerary = async (req, res) => {
     try {
         const { id } = req.params; // Get itinerary ID from URL parameters
         const updatedItinerary = await Itinerary.findByIdAndUpdate(id, req.body, { new: true }); // Update the itinerary
@@ -47,7 +68,7 @@ const updateItinerary = async (req, res) => {
 };
 
 // delete an itinerary from the database
-const deleteItinerary = async (req, res) => {
+export const deleteItinerary = async (req, res) => {
 
     /////////////////////////////////////////////////////////////////////////////////
     ///??????????????????? cannot be deleted if bookings are already made
@@ -70,78 +91,85 @@ const deleteItinerary = async (req, res) => {
     }
 };
 
-const filterItineraries = async (req, res) => {
+//export const filterItineraries = async (req, res) => {
+    // try {
+        // const { budget, date, preferences, language } = req.query;
+
+//         const fixedPreferences = ['historic', 'beaches', 'family-friendly', 'shopping']; // Fixed array of preferences
+//         const filterCriteria = {};   
+
+        
+//         // Budget filtering: expects budget to be an array [min, max]
+
+//         if (budget) {
+//             const budgetArray = budget.split(',').map(Number); // Convert to array of numbers
+//             if (budgetArray.length === 2) { // Ensure the array has exactly two values
+//                 const [min, max] = budgetArray; // Destructure the array
+//                 // Include values less than the min and within the min-max range
+//                 filterCriteria.price = {
+//                     $or: [
+//                         { $lte: min }, // Prices less than or equal to min
+//                         { $gte: min, $lte: max } // Prices within the range [min, max]
+//                     ]
+//                 };
+//             }
+//         }
+
+//         // Date filtering
+//         if (date) {
+//             const availableDate = new Date(date);
+//             filterCriteria.availableDates = { $gte: availableDate }; // Upcoming dates
+//         } 
+//         // Preferences filtering
+//         if (preferences) {
+//           //  const prefArray = preferences.split(',');
+//            // const validPreferences = prefArray.filter(pref => fixedPreferences.includes(pref));
+//             //filterCriteria.preferences = { $in: validPreferences };  
+//             filterCriteria.preferences =preferences;
+//         }
+
+//         // Language filtering
+//         if (tourLanguage) {
+//             filterCriteria.tourLanguage = tourLanguage; // Exact match for language
+//         }
+
+//         const itineraries = await Itinerary.find(filterCriteria).populate('activities').populate(
+//             'historicalSites');
+//         res.status(200).json(itineraries); // Return the filtered itineraries
+
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error filtering itineraries', error: error.message });
+//     }
+// };
+
+export const searchItems = async (req, res) => {
     try {
-        const { budget, date, preferences, language } = req.query;
-
-        const fixedPreferences = ['historic', 'beaches', 'family-friendly', 'shopping']; // Fixed array of preferences
-        const filterCriteria = {}; //empty object that will be populated based on the presence 
-                                    //and validity of the filter values provided
-
-        // Budget filtering
-        // Budget filtering: expects budget to be an array [min, max]
-
-        if (budget) {
-            const budgetArray = budget.split(',').map(Number); // Convert to array of numbers
-            if (budgetArray.length === 2) { // Ensure the array has exactly two values
-                const [min, max] = budgetArray; // Destructure the array
-                // Include values less than the min and within the min-max range
-                filterCriteria.price = {
-                    $or: [
-                        { $lte: min }, // Prices less than or equal to min
-                        { $gte: min, $lte: max } // Prices within the range [min, max]
-                    ]
-                };
-            }
-        }
-
-        // Date filtering
-        if (date) {
-            const availableDate = new Date(date);
-            filterCriteria.availableDates = { $gte: availableDate }; // Upcoming dates
-        } 
-        // Preferences filtering
-        if (preferences) {
-            const prefArray = preferences.split(',');
-            // Only allow preferences that are in the fixed array
-            const validPreferences = prefArray.filter(pref => fixedPreferences.includes(pref));
-            filterCriteria.preferences = { $in: validPreferences }; // Matching any of the valid preferences
-        }
-
-        // Language filtering
-        if (language) {
-            filterCriteria.language = language; // Exact match for language
-        }
-
-        const itineraries = await Itinerary.find(filterCriteria).populate('activities');
-        res.status(200).json(itineraries); // Return the filtered itineraries
-
-    } catch (error) {
-        res.status(500).json({ message: 'Error filtering itineraries', error: error.message });
-    }
-};
-
-const searchItems = async (req, res) => {
-    try {
+        // Destructure search parameters from the request query
         const { name, category, tags } = req.query;
-
-        // Initialize filter criteria
-        const filterCriteria = {};
-
-        // If searching by name, use a case-insensitive partial match
+    
+        // Initialize empty filter objects for each collection
+        const activityFilter = {};
+        const historicalPlacesFilter = {};
+        const itineraryFilter = {};
+    
+        // Name Filtering: Apply to both Activities and Historical Places
         if (name) {
-            filterCriteria.name = { $regex: name, $options: 'i' };
+          const regexName = { $regex: name, $options: 'i' }; // Case-insensitive regex for partial match
+          activityFilter.name = regexName;
+          historicalPlacesFilter.name = regexName;
+          itineraryFilter.name = regexName;
         }
-
-        // If category is provided, match it using a reference to the Category collection
+    
+        // Category Filtering: Apply only to Activities
         if (category) {
-            filterCriteria.category = category; 
+          activityFilter.category = category.toLowerCase();  // Exact match for category
         }
-
-        // If tags are provided, split into an array and match using references to the Tag collection
+    
+        // Tags Filtering: Apply only to Historical Places and activities
         if (tags) {
-            const tagsArray = tags.split(',').map(tag => tag.trim());
-            filterCriteria.tags = { $in: tagsArray }; // Assuming `tags` are references or exact strings
+          const tagsArray = tags.split(',').map(tag => tag.trim().toLowerCase());
+          activityFilter.tags = { $in: tagsArray };
+          historicalPlacesFilter.tags = { $in: tagsArray }; // Match any tag in the array
         }
 
         // Execute the query, populating any referenced fields
@@ -155,6 +183,3 @@ const searchItems = async (req, res) => {
         res.status(500).json({ message: 'Error searching for items', error: error.message });
     }
 };
-
-module.exports = { createItinerary, readItineraries, updateItinerary, 
-                    deleteItinerary,filterItineraries, searchItems };

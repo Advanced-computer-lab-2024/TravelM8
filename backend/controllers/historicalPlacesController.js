@@ -24,7 +24,19 @@ export const createHistoricalPlace= async (req, res) => {
     }
   }; 
 
-   
+   //TourismGovernor only
+export const getMyPlaces = async(req, res) => {    
+  let Places;
+  if(user.type === "TourismGovernor"){
+      Places = await HistoricalPlace.find({TourismGovernorId: user.id});
+      if(Places.length == 0)
+          res.status(204);
+      else
+          res.status(200).json({Places});
+  }else{
+      res.status(400).json({message:"enter a valid id"});
+  }
+};
 
   
 export const getAllHistoricalPlaces= async(req,res)=>{

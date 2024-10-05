@@ -5,6 +5,7 @@ import Seller from '../models/sellerModel.js';
 import Advertiser from '../models/advertiserModel.js';
 import Admin from '../models/adminModel.js';
 import TourismGovernor from '../models/tourismGovernorModel.js';
+import PendingUser from '../models/pendingUserModel.js';
 
 // Helper function to check if the username or email is already in use
 export const checkUniqueUsernameEmail = async (username, email) => {
@@ -15,7 +16,9 @@ export const checkUniqueUsernameEmail = async (username, email) => {
         Seller.findOne({ $or: [{ username }, { email }] }),
         Advertiser.findOne({ $or: [{ username }, { email }] }),
         Admin.findOne({ $or: [{ username }, { email }] }),
-        TourismGovernor.findOne({ $or: [{ username }, { email }] })
+        TourismGovernor.findOne({ $or: [{ username }, { email }] }),
+        PendingUser.findOne({ $or: [{ username }, { email }] })
+
     ]);
 
     return existingUser.some(user => user !== null); // Return true if any user with the same username or email exists
@@ -29,7 +32,9 @@ export const checkUniqueUsername = async (username) => {
         Seller.findOne({ username }),
         Advertiser.findOne({ username }),
         Admin.findOne({ username }),
-        TourismGovernor.findOne({ username })
+        TourismGovernor.findOne({ username }),
+        PendingUser.findOne({ username }),
+
     ]);
 
     return existingUser.some(user => user !== null); // Return true if any user with the same username or email exists

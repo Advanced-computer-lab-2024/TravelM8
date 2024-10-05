@@ -3,6 +3,13 @@ import bcrypt from 'bcryptjs';
 import validator from "validator";
 
 const sellerSchema = new mongoose.Schema({
+  
+  name: {
+    type: String,
+  },
+  description: {
+    type: String,
+  },
   username: {
     type: String,
     required: true,
@@ -10,14 +17,7 @@ const sellerSchema = new mongoose.Schema({
     immutable: true,
     match: /^[a-zA-Z0-9]{3,16}$/,
   },
- 
-  name: {
-    type: String,
-  },
-  description: {
-    type: String,
-  },
-  
+   
   email: {
     type: String,
     required: true,

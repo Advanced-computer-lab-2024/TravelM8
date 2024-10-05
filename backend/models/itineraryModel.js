@@ -24,7 +24,7 @@ const itineraySchema = new mongoose.Schema({
         }
     ],
 
-    sites: [
+    historicalSites: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Place',

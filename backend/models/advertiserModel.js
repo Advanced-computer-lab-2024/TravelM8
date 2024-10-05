@@ -3,6 +3,17 @@ import bcrypt from 'bcryptjs';
 import validator from "validator";
 
 const advertiserSchema = new mongoose.Schema({
+  name: {
+    type: String,
+     
+  },
+  description: {
+    type: String,
+   // required: true,
+  },
+  
+  
+  
   username: {
     type: String,
     required: true,

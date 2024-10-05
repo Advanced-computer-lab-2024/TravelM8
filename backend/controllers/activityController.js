@@ -31,7 +31,7 @@ const createNewActivity = async(req, res) => {
         
         if (validateNewActivity){
             try{
-                await activityModel.create(newActivity);
+                await activityModel.create({...newActivity});
                 res.status(201).json({message: "successfully created new activity", newActivity});
             }catch(error){
                 res.status(400).json({message: "unsuccessful creation of activity"});

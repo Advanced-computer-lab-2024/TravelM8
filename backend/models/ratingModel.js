@@ -6,6 +6,8 @@ const ratingSchema = new mongoose.Schema({
         ref: "User",
         required: true,
     },
+   
+    
     entityId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
