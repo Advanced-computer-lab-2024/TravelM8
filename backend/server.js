@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
-
+import cors from 'cors';
 import activityCategoryRoute from "./routes/activityCategoryRoute.js";
 import adminRoute from "./routes/adminRoute.js";
 import preferenceTagRoute from "./routes/preferenceTagRoute.js";
@@ -23,6 +23,7 @@ import pendingUserRoute from "./routes/pendingUserRoute.js";
 dotenv.config({path:'../.env'});
 
 const app = express();
+app.use(cors());
 const PORT = process.env.PORT || 5001;
 
 const __dirname = path.resolve();
