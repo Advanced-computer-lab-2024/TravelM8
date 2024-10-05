@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './signup.css';
 import { Menu } from 'lucide-react';
 import axios from 'axios';
+import backgroundImage from '/Users/arwataha/Documents/GitHub/TravelM8/frontend/src/assets/background.jpeg';
 
 const FormPage = () => {
     const [formData, setFormData] = useState({
@@ -35,14 +36,20 @@ const FormPage = () => {
 
     return (
         <>
+         <div
+          className="background-image"
+          style={{ backgroundImage: `url(${backgroundImage})` }} // Set the background image source here
+        ></div>
             <nav className="navbar">
                 <div className="navbar-left">
-                    <img src="./images/logo.png" alt="TravelM8"  className="logo" />
+                    <img src="./src/assets/logo4.jpg" alt="TravelM8"  className="logo" />
                 </div>
                 <div className="navbar-right">
                     <button className="nav-button">Home</button>
                     <button className="nav-button">About Us</button>
+                    <button className="nav-button">Our Services</button>
                     <button className="nav-button">Contact Us</button>
+                    <button className="nav-login-button">Login</button>
                 </div>
             </nav>
             <div className="form-container">

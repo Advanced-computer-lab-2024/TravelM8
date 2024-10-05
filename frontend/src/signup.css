@@ -1,14 +1,68 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #fffefe; /* Background color for the whole page */
+  font-family: Arial, sans-serif;/* Background color for the whole page */
   margin: 0;
   padding: 0;
+}
+
+
+
+.form-container {
+  width: 500px; /* Width of the form */
+  margin: 120px auto; /* Adjust this top margin to move the form down */
+  padding: 20px; /* Padding around the form */
+  background-color: white; /* Background color for the form */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
+  position: relative;
+  left: 25%;
+  overflow: hidden;
+}
+
+
+.background-image {
+  position: absolute; /* Position the image absolutely */
+  top: 0;
+  left: 0;
+  width: 100%; /* Make the image cover the entire area */
+  height: 100%; 
+  background-size: cover; /* Make the image cover the container */
+  background-position: center; /* Center the image */
+  opacity: 0.5; /* Adjust opacity (0 = transparent, 1 = opaque) */
+  z-index: -1; /* Place it behind other content */
+}
+
+.nav-login-button {
+  background-color: #87af7b; /* Background color */
+  color: #fff; /* Text color */
+  border: none; /* No border */
+  padding: 10px 20px; /* Padding inside the button */
+  border-radius: 20px; /* Rounded corners */
+  cursor: pointer; /* Cursor changes to pointer */
+  font-size: 16px; /* Font size */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.nav-login-button:hover {
+  background-color: #518251; /* Change background color on hover */
+}
+
+
+
+.navbar {
+  position: fixed; /* Fix the navbar at the top */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000; /* Ensure the navbar is on top of other content */
+  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent to blend with the background */
+  padding: 10px; /* Add some padding */
 }
 
 
 .navbar-right {
   display: flex;
   align-items: center;
+  margin-right: 80px;
 }
 
 .nav-button {
@@ -51,16 +105,7 @@ body {
   margin: 0 20px;
 }
 
-.form-container {
-  width: 500px; /* Width of the form */
-  margin: 60px auto; /* Adjust this top margin to move the form down */
-  padding: 20px; /* Padding around the form */
-  background-color: white; /* Background color for the form */
-  border-radius: 8px; /* Rounded corners */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
-  position: relative;
-  left: 25%;
-}
+
 
 .form-title {
   text-align: left; /* Center title text */
@@ -93,7 +138,7 @@ textarea {
 
 .submit-button {
   background-color: #87af7b; /* Button background color */
-  color: rgb(0, 0, 0); /* Button text color */
+  color: rgb(255, 255, 255); /* Button text color */
   border: none; /* No border */
   border-radius: 4px; /* Rounded corners */
   padding: 10px; /* Padding inside the button */
