@@ -5,10 +5,6 @@ import { Search, Menu, User, Heart, ShoppingCart } from 'lucide-react';
 const ProfileTemplate = () => {
 
 
-
-
-
-    
   const [profile, setProfile] = useState({
     username: '',
     email: '',
