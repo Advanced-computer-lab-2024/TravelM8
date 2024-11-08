@@ -62,40 +62,6 @@ export const unarchiveProduct = async (req, res) =>{
 
 
 
-export const archiveProduct = async (req, res) => {
-  try {
-    const{id}= req.params;
-    console.log(`Archiving product with ID: ${id}`);
-
-    const ArchivedProduct = await Product.findByIdAndUpdate(
-      id,
-      {archived: true}, 
-      {new: true}
-    );
-
-    if(!ArchivedProduct){
-      return res.status(404).json({ message: 'Product not found'});
-    }
-    res.status(200).json({ message: 'Product archived successfully'});
-  } catch(error){
-    res.status(500).json({message: 'error occured ...'});
-  }
-  }
-
-export const unarchiveProduct = async (req, res) =>{
-  try{
-    const {id} = req.params;
-    const unArchivedProduct = await Product.findByIdAndUpdate(id, {archived: false}, {new: true});
-
-    if(!unArchivedProduct){
-      return res.status(404).json({messege: "Product not found"});
-    }
-    res.status(200).json({messege: 'Product unarchived successfully'});
-  } catch (error){
-    res.status(500).json({messege: 'Error occured'});
-  }
-}
-
 
 // Function to delete a product
 export const deleteProduct = async (req, res) => {
