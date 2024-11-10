@@ -29,6 +29,8 @@ const TouristProfilePage = () => {
   const [mobileNumber, setMobileNumber] = useState(profile ? profile.mobileNumber.slice(2) : ''); // Default to empty
   const [showDialog, setShowDialog] = useState(false);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -113,6 +115,7 @@ const TouristProfilePage = () => {
   }
 
   useEffect(() => {
+    const token = localStorage.getItem('token');   
     if (!token) {
       navigate("/login");
       return;
@@ -129,6 +132,43 @@ const TouristProfilePage = () => {
 
     getProfileInfo();
   }, [navigate,token]);
+
+  const handleYesClick = async () => {
+    console.log("Yes button clicked");
+     
+      try {
+          
+        const token = localStorage.getItem('token');   
+          if (!token) {
+              console.error("Authorization token is required");
+              return;
+          }
+       
+          const response = await fetch('http://localhost:5001/api/deleteRequests', {
+              method: 'POST',
+              headers: {
+                  'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+                  'Content-Type': 'application/json',
+              },
+          });
+         console.log(token);
+         
+          const data = await response.json();
+  
+          if (response.ok) {
+            alert('Deletion request created successfully:');
+            setShowDialog(false);
+              console.log('Deletion request created successfully:' );
+          } else {
+            alert(data.msg);
+            setShowDialog(false);
+              console.error('Error creating deletion request:', data.msg);
+          }
+      } catch (error) {
+          console.error('Error:', error);
+      }
+  };
+  
 
   const renderContent = () => {
     if (!profile) {
@@ -416,33 +456,41 @@ const TouristProfilePage = () => {
               className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
               onClick={() => setShowDialog(true)}
             >
-              <HeartCrack className="mr-3" />
+              <User className="mr-3" />
               Delete My account
             </button>
             {showDialog && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-4 rounded shadow-lg">
-            <p>Are you sure you want to delete your account?</p>
-            <div className="flex justify-end mt-4">
-            <button
-        className="bg-black text-white px-4 py-2 rounded mr-2"
-        onClick={() => {
-          // Show a confirmation message without making an API call
-          alert("Your account deletion request has been sent successfully.");
-          setShowDialog(false); // Close the dialog
-        }}
-      >
-        Yes
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
+          {/* Close button */}
+          <button
+            className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+            onClick={() => setShowDialog(false)}
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <span className="sr-only">Close</span>
+          </button>
+      
+          <p className="text-lg">Are you sure you want to delete your account?</p>
+          <div className="flex justify-end mt-4">
+           
+            <button  className="bg-black text-white px-6 py-3 rounded mr-4"
+            onClick={handleYesClick}  >
+       Yes
       </button>
-              <button
-                className="bg-gray-300 px-4 py-2 rounded"
-                onClick={() => setShowDialog(false)}
-              >
-                No
-              </button>
-            </div>
+      
+            <button
+              className="bg-gray-300 px-6 py-3 rounded"
+              onClick={() => setShowDialog(false)}
+            >
+              No
+            </button>
           </div>
         </div>
+      </div>
+      
       )}
       <Logout/>
             </nav>

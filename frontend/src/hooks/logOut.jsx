@@ -56,7 +56,11 @@ const Logout = () => {
         </AlertDialogHeader>
         <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction variant="outline" size="sm" onClick={handleLogout}>
+            <AlertDialogAction 
+                variant="destructive"
+                size="sm"
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-4 py-2 font-medium rounded-md hover:bg-red-700">
             Sign Out
             </AlertDialogAction>
         </AlertDialogFooter>

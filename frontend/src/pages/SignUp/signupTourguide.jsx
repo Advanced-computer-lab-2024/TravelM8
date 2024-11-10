@@ -39,8 +39,11 @@ const FormPage = () => {
       setImage(e.target.files[0]);
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange1 = (e) => {
     setidfile(e.target.files[0]);
+  };
+
+  const handleFileChange2 = (e) => {
     setcertiffile(e.target.files[0]);
   };
 
@@ -157,7 +160,7 @@ const FormPage = () => {
                     <input
                         type="file"
                         accept=".pdf,.doc,.docx,image/*"
-                        onChange={handleFileChange}
+                        onChange={handleFileChange1}
                         name="idfile"
                         required
                     />
@@ -166,7 +169,7 @@ const FormPage = () => {
                     <input
                         type="file"
                         accept=".pdf,.doc,.docx,image/*"
-                        onChange={handleFileChange}
+                        onChange={handleFileChange2}
                         name="certificatesfile"
                     />
 

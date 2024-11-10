@@ -102,6 +102,13 @@ const itineraySchema = new mongoose.Schema({
     },
 
   ],
+  
+  images: [
+    {
+      type:String,
+      required:false
+    }
+  ],
 
 
   tourGuideId: {

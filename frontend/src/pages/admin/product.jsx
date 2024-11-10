@@ -40,6 +40,7 @@ const ProductPage = () => {
   const [currentProduct, setCurrentProduct] = useState(null);
   const [updatedProductData, setUpdatedProductData] = useState({});
   const [newProductData, setNewProductData] = useState({});
+  const [image, setImage] = useState();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -85,6 +86,21 @@ const ProductPage = () => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+    console.log("imageeee",file)
+    console.Conso
+    setNewProductData(prev => ({
+        ...prev,
+        image: file
+    }));
+    setUpdatedProductData(prev => ({
+      ...prev,
+      image: file
+  }));
+};
+
   const openEditModal = (product) => {
     setCurrentProduct(product);
     setUpdatedProductData({
@@ -100,7 +116,14 @@ const ProductPage = () => {
   const handleUpdateProduct = async () => {
     if (currentProduct) {
       try {
-        const response = await updateProduct(currentProduct._id, updatedProductData);
+        const formData = new FormData();
+        formData.append("name", updatedProductData.name);
+        formData.append("image", updatedProductData.image);  
+        formData.append("price", updatedProductData.price); 
+        formData.append("quantity", updatedProductData.quantity); 
+        formData.append("description", updatedProductData.description); 
+  
+        const response = await updateProduct(currentProduct._id, formData);  // Pass FormData
         toast({
           title: "Success",
           description: "Product updated successfully!",
@@ -118,7 +141,6 @@ const ProductPage = () => {
       }
     }
   };
-
 
 const toggleArchive = async (productId, isArchived) => {
     try{
@@ -138,23 +160,37 @@ const toggleArchive = async (productId, isArchived) => {
 
   const handleCreateProduct = async () => {
     try {
-      const response = await createProduct(newProductData);
+
+      const formData = new FormData();
+      formData.append("name", newProductData.name);
+      formData.append("price", newProductData.price);
+      formData.append("quantity", newProductData.quantity);
+      formData.append("description", newProductData.description);
+  
+      if (image) {
+        formData.append("image", image);
+      }
+      const response = await createProduct(formData);
+  
       toast({
         title: "Success",
         description: "Product created successfully!",
         duration: 3000,
       });
+  
       setProducts([...products, response]);
       setIsCreateOpen(false);
       setNewProductData({});
     } catch (error) {
+      console.error(error.response);
       toast({
         title: "Error",
-        description: "Failed to create the product.",
+        description: error.response?.data?.message || "Failed to create the product.",
         duration: 3000,
       });
     }
   };
+  
 
   return (
     <div style={{ display: "flex" }}>
@@ -194,10 +230,12 @@ const toggleArchive = async (productId, isArchived) => {
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="newProductImage" className="text-right">Image</Label>
                   <Input
+                  name="image"
+                  type="file"
+                        accept="image/*"
                     id="newProductImage"
-                    value={newProductData.image || ''}
-                    onChange={(e) => setNewProductData({ ...newProductData, image: e.target.value })}
-                    className="col-span-3"
+                    onChange={handleImageChange}
+                    className="col-span-3"                  
                   />
                 </div>
 
@@ -255,6 +293,17 @@ const toggleArchive = async (productId, isArchived) => {
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="productImage" className="text-right">Image</Label>
+                  <Input
+                  name="image"
+                  type="file"
+                        accept="image/*"
+                    id="productImage"
+                    onChange={handleImageChange}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="productPrice" className="text-right">Price</Label>
                   <Input
                     id="productPrice"
@@ -295,6 +344,7 @@ const toggleArchive = async (productId, isArchived) => {
             <TableHeader>
               <TableRow>
                 <TableHead>Product Name</TableHead>
+                <TableHead>Image</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead>Quantity</TableHead>
                 <TableHead>Sales</TableHead>
@@ -306,6 +356,7 @@ const toggleArchive = async (productId, isArchived) => {
               {products.map((product) => (
                 <TableRow key={product._id}>
                   <TableCell>{product.name}</TableCell>
+                  <TableCell><img src={product.image} alt={product.name} style={{ width: "50px", height: "50px", objectFit: "cover" }} /></TableCell>
                   <TableCell>{product.price}</TableCell>
                   <TableCell>{product.quantity}</TableCell>
                   <TableCell>{product.sales}</TableCell>

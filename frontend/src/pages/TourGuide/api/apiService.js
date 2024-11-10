@@ -20,6 +20,16 @@ export async function getMyItineraries(token) {
   })).data;
 }
 
+export async function updateItinerary(id,updatedItinerary) {
+  await apiClient.put(`itineraries/${id}`,updatedItinerary);
+}
+
+export async function updatePlace(token,id,place) {
+  await apiClient.put(`updatePlace/${id}`, place, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+} 
+
 
 export async function fetchItineraries(){
     try {
@@ -43,7 +53,6 @@ export async function deleteItinerary(id){
     try {
       await axios.delete(`http://localhost:5001/api/itineraries/${id}`);
       alert('Itinerary deleted successfully!');
-      setItineraries((prev) => prev.filter((itinerary) => itinerary.id !== id));
     } catch (error) {
       console.error('Error deleting itinerary:', error);
       alert('Failed to delete itinerary.');

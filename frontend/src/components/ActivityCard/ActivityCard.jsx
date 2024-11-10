@@ -57,16 +57,16 @@ export default function ActivityCard({ activities, isTourist, isAdvertiser, isAd
                 </div>
                 <div className="flex items-center flex-wrap gap-2 mb-2">
                   <Tag className="w-4 h-4 mr-1" />
-                  {activity.tags.map((tag, tagIndex) => (
+                  {activity.tags?.map((tag, tagIndex) => (
                     <Badge key={tagIndex} variant="secondary">
-                      {tag?.name ?? tag}
+                      {tag.name}
                     </Badge>
                   ))}
                 </div>
                 <div className="flex items-center mb-2">
                   <span className="text-sm font-semibold mr-2">Category:</span>
                   <Badge variant="outline">
-                    {activity.categoryName ?? activity.category}
+                    {activity.categoryName}
                   </Badge>
                 </div>
                 <div className="text-xl font-bold">
@@ -102,7 +102,7 @@ export default function ActivityCard({ activities, isTourist, isAdvertiser, isAd
                       </Button>
                     </div>
                   )}
-                  {isAdmin && <Button onClick={()=>handleFalg(activity._id)} variant="destructive">Flag Inappropriate</Button>}
+                  {isAdmin && <Button onClick={()=>handleFlag(activity._id)} variant="destructive">Flag Inappropriate</Button>}
 
                 </div>
               </div>

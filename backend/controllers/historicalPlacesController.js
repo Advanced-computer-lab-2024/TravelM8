@@ -4,6 +4,7 @@ import TourismGovernor from "../models/tourismGovernorModel.js";
 //const  mongoose = require('mongoose');
 import jwt from "jsonwebtoken"; // Add this line
 import axios from "axios";
+import PlaceTags from "../models/placeTag.js";
 
 export const createHistoricalPlace = async (req, res) => {
   try {
@@ -51,10 +52,11 @@ export const getMyPlaces = async (req, res) => {
 
   try {
     let Places;
-    Places = await HistoricalPlace.find({ tourismGovernorId: userId });
+    Places = await HistoricalPlace.find({ tourismGovernorId: userId }).populate('tags','type');
     if (Places.length == 0) res.status(204);
     else res.status(200).json({ Places });
   } catch (error) {
+    console.error("Error fetching places:", error);
     res.status(400).json({ message: "enter a valid id" });
   }
 };

@@ -58,7 +58,7 @@ const HistoricalSchema = new mongoose.Schema({
 
   tags: {
     type:String,
-    ref:"placeTag",
+    ref:"PlaceTag",
     required:true
   },
 

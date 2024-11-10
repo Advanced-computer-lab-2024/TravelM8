@@ -1,12 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { jwtDecode } from 'jwt-decode';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Import useNavigate 3alashan kol user yeroo7 lel page ely el mafrood yero7ha
-import { jwtDecode } from 'jwt-decode';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,52 +14,50 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const navigate = useNavigate(); // Initialize navigate function
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      // Send a POST request to the backend to authenticate the user
       const response = await axios.post('http://localhost:5001/api/auth/login', {
         username,
         password
       });
 
-      // If successful, you can store the token and navigate the user
       const { token, role } = response.data;
-      localStorage.setItem('token', token); // Store JWT token in localStorage
+      localStorage.setItem('token', token);
 
-  // Decode the token to extract the user ID
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken.id || decodedToken.userId; // Check for the correct field name in your JWT payload
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken.id || decodedToken.userId;
 
-  // Log the user ID to the console
-  console.log("User ID:", userId);
-
-  // Store the user ID if needed
-  localStorage.setItem('userId', userId);
+      console.log("User ID:", userId);
+      localStorage.setItem('userId', userId);
 
       console.log("Login successful. Role:", role);
       console.log("token:", token);
-  
-    
 
-      // Redirect to different pages based on role
-      if (role === 'Tourist') {
-        navigate('/tourist-page'); // Tourist role
-      } else if (role === 'Seller') {
-        navigate('/Sellerdashboard'); // Seller role
-      } else if (role === 'TourGuide') {
-        navigate('/tourGuideDashboard');
-    } else if (role === 'TourismGovernor') {
-        navigate('/TourismGovernorDashboard');
-      } else if (role === 'Admin') {
-        navigate('/dashboard');
-      } else if (role === 'Advertiser') {
-        navigate('/advertiserDashboard');
-      } else {
-        navigate('/default-page'); // Default page if role doesn't match
+      switch (role) {
+        case 'Tourist':
+          navigate('/tourist-page');
+          break;
+        case 'Seller':
+          navigate('/Sellerdashboard');
+          break;
+        case 'TourGuide':
+          navigate('/tourGuideDashboard');
+          break;
+        case 'TourismGovernor':
+          navigate('/TourismGovernorDashboard');
+          break;
+        case 'Admin':
+          navigate('/AdminDashboard');
+          break;
+        case 'Advertiser':
+          navigate('/advertiserDashboard');
+          break;
+        default:
+          navigate('/default-page');
       }
     } catch (error) {
       setErrorMessage(error.response?.data?.msg || "Login failed. Please try again.");
@@ -67,11 +65,12 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Login</CardTitle>
-          <CardDescription>Enter your credentials to access your account</CardDescription>
+    <div className="min-h-screen flex items-center justify-center bg-cover bg-center" style={{backgroundImage: "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80')"}}>
+      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <Card className="w-full max-w-md relative z-10 bg-white/80 backdrop-blur-sm">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center">Welcome to Your Journey</CardTitle>
+          <CardDescription className="text-center">Sign in to explore amazing destinations</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
@@ -84,6 +83,7 @@ export default function Login() {
                 value={username} 
                 onChange={(e) => setUsername(e.target.value)} 
                 required 
+                className="bg-white/50 backdrop-blur-sm"
               />
             </div>
             <div className="space-y-2">
@@ -96,6 +96,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  className="bg-white/50 backdrop-blur-sm"
                 />
                 <Button
                   type="button"
@@ -113,10 +114,10 @@ export default function Login() {
                 </Button>
               </div>
             </div>
-            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+            {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">Log in</Button>
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90">Start Your Adventure</Button>
           </CardFooter>
         </form>
       </Card>

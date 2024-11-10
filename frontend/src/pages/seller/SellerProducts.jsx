@@ -7,7 +7,7 @@ import { Input } from '../../components/ui/input';
 import { useToast } from "./components/useToast";
 import { SearchBar } from './components/filters/search';
 import { PriceFilter } from "./components/filters/price-filter";
-import { getProducts } from './api/apiService'; // Import the getProducts function
+import { getProducts } from './api/apiService'; 
 import useRouter from '../../hooks/useRouter';
 
 const token = localStorage.getItem('token');
@@ -113,44 +113,76 @@ export default function SellerProducts() {
     }
   };
 
- 
-
-
-  // Function to update the product
-  const updateProduct = async (productData) => {
+  const handleCreateProduct = async (formData) => {
     try {
-      const response = await fetch(`http://localhost:5001/api/products/${editProductData._id}`, {
-        method: 'PUT',
+      const response = await fetch('http://localhost:5001/api/products', {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify(productData),
+        body: formData, // pass FormData here
       });
-
+  
       if (!response.ok) {
-        throw new Error('Error updating product');
+        throw new Error('Failed to create product');
       }
-
+  
       const savedProduct = await response.json();
-      setProducts((prevProducts) =>
-        prevProducts.map((product) => (product._id === savedProduct._id ? savedProduct : product))
-      );
-
+      setProducts((prevProducts) => [...prevProducts, savedProduct]);
+      setIsAddProductModalOpen(false);
       toast({
-        title: "Product Updated",
-        description: "Your product has been successfully updated.",
+        title: "Success",
+        description: "Product created successfully!",
+        duration: 3000,
       });
-      setIsEditProductModalOpen(false);
     } catch (error) {
-      console.error('Error updating product:', error);
       toast({
         title: "Error",
-        description: "Failed to update product. Please try again.",
+        description: error.message || "Failed to create the product.",
         variant: "destructive",
+        duration: 3000,
       });
     }
   };
+  
+  const handleUpdateProduct = async (formData) => {
+    if (editProductData) {
+      try {
+        const response = await fetch(`http://localhost:5001/api/products/${editProductData._id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: formData, // pass FormData here
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to update product');
+        }
+  
+        const updatedProduct = await response.json();
+        setProducts((prevProducts) =>
+          prevProducts.map((product) =>
+            product._id === updatedProduct._id ? updatedProduct : product
+          )
+        );
+        setIsEditProductModalOpen(false);
+        toast({
+          title: "Success",
+          description: "Product updated successfully!",
+          duration: 3000,
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to update the product.",
+          variant: "destructive",
+          duration: 3000,
+        });
+      }
+    }
+  };
+  
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -165,7 +197,7 @@ export default function SellerProducts() {
           <DialogHeader>
             <DialogTitle>Add New Product</DialogTitle>
           </DialogHeader>
-          <AddProductForm onSubmit={handleAddProduct} />
+          <AddProductForm onSubmit={handleCreateProduct} />
         </DialogContent>
       </Dialog>
 
@@ -178,7 +210,7 @@ export default function SellerProducts() {
           <DialogHeader>
             <DialogTitle>Edit Product</DialogTitle>
           </DialogHeader>
-          <AddProductForm onSubmit={updateProduct} initialData={editProductData} />
+          <AddProductForm onSubmit={handleUpdateProduct } initialData={editProductData} />
         </DialogContent>
       </Dialog>
 
@@ -199,11 +231,11 @@ export default function SellerProducts() {
                   alt={product.name}
                   className="w-full h-40 object-cover mb-2"
                 />
-                <p className="font-bold">{`Price: EGP ${product.price.toFixed(2)}`}</p>
-                <p className="mb-2">{product.description}</p>
+<p className="font-bold">{`Price: EGP ${parseFloat(product.price).toFixed(2)}`}</p>
+<p className="mb-2">{product.description}</p>
                 <p className='mb-2'>{`Sold: ${product.sales} `}</p>
                 <p className='mb-2'>{`Remaining stock: ${product.quantity}`}</p>
-                <p className="font-semibold">{`Seller ID: ${product.sellerId}`}</p>
+                <p className="font-semibold">{`Seller ID: ${product.sellerID}`}</p>
                 <Button className="mt-2 ml-2" onClick={() => handleEdit(product)}>
                   Edit
                 </Button>
@@ -235,6 +267,8 @@ function AddProductForm({ onSubmit, initialData }) {
     quantity: initialData ? initialData.quantity : "",
     image: initialData ? initialData.image : "" 
   });
+  const [image, setImage] = useState(null); // to store image file
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
@@ -242,24 +276,38 @@ function AddProductForm({ onSubmit, initialData }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]; // get the file
+    setImage(file); // store the file in the state
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
+  
+    // Prepare form data for submission
     const productData = {
       name: formData.name,
       description: formData.description,
       price: parseFloat(formData.price),
       quantity: parseInt(formData.quantity, 10),
-      image: formData.image,
     };
-
-    console.log("Submitting product data:", productData);
-
-    await onSubmit(productData);
-
+  
+    const formDataToSubmit = new FormData();
+    formDataToSubmit.append("name", productData.name);
+    formDataToSubmit.append("description", productData.description);
+    formDataToSubmit.append("price", productData.price);
+    formDataToSubmit.append("quantity", productData.quantity);
+  
+    if (image) {
+      formDataToSubmit.append("image", image); // append image file to form data
+    }
+  
+    // Pass formDataToSubmit to onSubmit function (handleCreateProduct or handleUpdateProduct)
+    await onSubmit(formDataToSubmit);
+  
     setIsSubmitting(false);
-
+  
     if (!initialData) {
       setFormData({
         name: "",
@@ -268,6 +316,7 @@ function AddProductForm({ onSubmit, initialData }) {
         quantity: "",
         image: "",
       });
+      setImage(null); // clear the selected image
     }
   };
 
@@ -283,6 +332,9 @@ function AddProductForm({ onSubmit, initialData }) {
     }
   }, [initialData]);
 
+
+
+  
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
@@ -332,14 +384,13 @@ function AddProductForm({ onSubmit, initialData }) {
         />
       </div>
       <div>
-        <Label htmlFor="image">Image URL</Label>
+        <Label htmlFor="image">Image </Label>
         <Input
           id="image"
           name="image"
-          type="text"
-          value={formData.image}
-          onChange={handleChange}
-          required
+          accept="image/*"
+          type="file"
+          onChange={handleImageChange}
           disabled={isSubmitting}
         />
       </div>

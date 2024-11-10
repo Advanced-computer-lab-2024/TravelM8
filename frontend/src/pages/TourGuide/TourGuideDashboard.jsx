@@ -139,18 +139,7 @@ const TourGuideDashboard = () => {
     });
   };
 
-  const handlePlaceChange = (value) => {
-    setFormData({ ...formData, [field]:[...selectedActivities, value] });
-    setSelectedActivities((prevItems) => {
-      if (isSelected) {
-        // If value is already selected, remove it
-        return prevItems.filter((item) => item !== value);
-      } else {
-        // Otherwise, add the value
-        return [...prevItems, value];
-      }
-    });
-};
+
 
 const handleRemoveActivityBadge = (activity) => {
   setSelectedActivities((prevItems) =>
@@ -272,8 +261,9 @@ async function fetchItineraries() {
 
   return (
     <>
+    <DashboardsNavBar profilePageString="/tourGuideProfile"/>
       <div className="container w-full mx-auto p-4 overflow-y: scroll min-h-[101vh]">
-        <DashboardsNavBar profilePageString="/tourGuideProfile"/>
+        
         <div className="flex flex-col md:flex-row gap-8">
           <div className="w-full md:w-3/4 mx-auto items-center jusitfy-center">
             <div className="flex items-center justify-between space-x-4 text-sm">

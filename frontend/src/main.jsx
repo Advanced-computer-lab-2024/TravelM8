@@ -15,7 +15,7 @@ import Admin from "@/pages/admin/services/Admin"; // Import the Admin component
 import TourismGovernor1 from "@/pages/admin/services/TourismGovernor.jsx";
 import DeleteUser from "./pages/admin/deleteUser-page.jsx";
 import PreferenceTag from "./pages/admin/preferenceTag-page.jsx";
-import Dashboard from "./pages/admin/dashboard.jsx";
+import AdminDashboard from "./pages/admin/dashboard.jsx";
 import AdvertiserProfile from "./pages/Advertiser/advertiserProfile";
 import Product from "./pages/admin/product.jsx";
 import TourGuideProfile from "./pages/TourGuide/TourguideProfile.jsx";
@@ -24,13 +24,16 @@ import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
 import SellerProfile from "@/pages/seller/SellerProfile.jsx";
 import SellerProducts from "@/pages/seller/SellerProducts.jsx";
 import ComplaintsPage from "@/pages/admin/complaints.jsx";
+
+//import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
+//import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
 import AdminItinerariesPage from "./pages/admin/AdminItineraryPage.jsx";
-import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard.jsx";
+import TourGuideDashboard from "./pages/TourGuide/tourguideDashboardDemo.jsx";
 import ItineraryForm from "./pages/TourGuide/ItineraryForm.jsx";
 import ActivityForm from "./pages/Advertiser/ActivityForm.jsx";
 import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard.jsx";
-//import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
-//import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
+import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
+import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
 import PendingUserDocuments from "./pages/admin/PendingUsersDocuments.jsx";
 import Sellerdashboard from '@/pages/seller/Sellerdashboard.jsx';
 import AccountDelete from "./pages/admin/accountDelete.jsx"
@@ -48,7 +51,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/deleteUser" element={<DeleteUser />} />
         <Route path="/viewComplaints" element={<ComplaintsPage />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/Admindashboard" element={<AdminDashboard />} />
         <Route path="/product" element={<Product />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
         <Route path="/deleteAccount" element={<AccountDelete />} />
