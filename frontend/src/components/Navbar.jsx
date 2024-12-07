@@ -5,10 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Globe,ShoppingCart } from 'lucide-react';
+import { ChevronDown, Globe, ShoppingCart, ShoppingBag, Store } from 'lucide-react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Cart from "../pages/tourist/components/products/cart.jsx";
 import LoginPage from "../pages/signIn/signin";
 import SignupDialog from "../pages/SignUp/signup";
 import LogoutAlertDialog from "@/hooks/logoutAlert";
@@ -20,7 +19,6 @@ const pages = [
   { label: "Activities", value: "activities" },
   { label: "Itineraries", value: "itineraries" },
   { label: "Places", value: "museums" },
-  { label: "Products", value: "products" },
   { label: "Flights", value: "flights" },
   { label: "Hotels", value: "hotels" },
   { label: "Transportation", value: "hotels" },
@@ -80,8 +78,6 @@ export default function Navbar({ profilePageString, children }) {
       return null;
     }
   };
-
-
 
   const fetchCart = async () => {
     try {
@@ -208,51 +204,8 @@ export default function Navbar({ profilePageString, children }) {
           TRAVELM8
         </div>
 
-        {/* <label
-      htmlFor="currency"
-      style={{
-        display: 'flex',
-        width: 96.5,
-        alignItems: 'center',
-        backgroundColor: 'transparent',
-       color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black', // Set color based on currentPage
-      }}
-    >
-      <Globe
-        style={{
-          marginRight: '8px',
-          fontSize: '20px',
-          color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black' // Set icon color based on currentPage
-        }}
-      />
-      <select
-              id="currency"
-              value={currency}
-              onChange={handleCurrencyChange}
-              style={{
-                padding: '5px',
-                fontSize: '14px',
-                backgroundColor: 'transparent',
-                color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black' // Set text color based on currentPage
-              }}
-            >
-              {Object.keys(exchangeRates).map((cur) => (
-                <option
-                  key={cur}
-                  value={cur}
-                  style={{
-                    color: 'black', // Option elements usually inherit color, explicitly set if needed
-                  }}
-                >
-                  {cur}
-                </option>
-              ))}
-            </select>
-          </label> */}
-
-
         <div className="hidden md:flex items-center justify-start ml-32 space-x-1">
-          {pages.map((page) => (
+          {pages.filter(page => page.value !== "products").map((page) => (
             <button
               key={page.value}
               className={`${
@@ -269,92 +222,96 @@ export default function Navbar({ profilePageString, children }) {
               {page.label}
             </button>
           ))}
-
         </div>
 
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
              <>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={(currentPage === "/" || currentPage === `/?currency=${currency}`)  ? "text-white hover:bg-transparent hover:text-white " : "text-black"}
+                onClick={() => navigate(`/tourist-page?type=products&currency=${currency}`)}
+              >
+                <Store className="h-5 w-5" />
+              </Button>
+              <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={(currentPage === "/" || currentPage === `/?currency=${currency}`)  ? "text-white hover:bg-transparent hover:text-white " : "text-black"}
+                  >
+                    <div className="relative">
+                      <ShoppingCart className="h-5 w-5" />
+                      {totalItems > 0 && (
+                        <Badge
+                          className="absolute -top-2  -right-2 h-4 w-4 flex items-center justify-center p-2"
+                        >
+                          {totalItems}
+                        </Badge>
+                      )}
+                    </div>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="flex flex-col h-screen">
+                  <SheetHeader>
+                    <SheetTitle>Your Cart</SheetTitle>
+                    <SheetDescription>Review your items before checkout</SheetDescription>
+                  </SheetHeader>
+                  <div className="flex-grow overflow-y-auto">
+                    {cart.length > 0 ? (
+                      <ul className="space-y-4">
+                        {cart.map((item) => (
+                          <li key={item?._id} className="flex items-center justify-between space-x-4">
+                            <div className="flex items-center space-x-4">
+                              <img
+                                src={item?.productId?.image || "https://via.placeholder.com/100"}
+                                alt={item?.productId.name}
+                                className="w-16 h-16 object-cover rounded"
+                              />
+                              <div>
+                                <h4 className="font-medium mb-3 text-md">{item?.productId.name}</h4>
+                                <NumberStepper
+                                value={item?.quantity}
+                                onChange={(newQuantity) => {
+                                    updateItemQuantity(item, newQuantity);
+                                }}
+                                min={0}
+                                max={item?.productId.quantity}
+                                step={1}  />
+                              </div>
+                            </div>
+                            <span className="font-medium mb-10 text-lg">
+                              {(item.productId.price * (exchangeRates[currency] || 1)).formatCurrency(currency)}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>Your cart is empty.</p>
+                    )}
+                  </div>
+                  {cart.length > 0 && (
+                    <div className="mt-auto">
+                      <div className="flex justify-between items-center p-4">
+                        <span className="font-medium">Total:</span>
+                        <span className="font-bold">{(totalPrice* (exchangeRates[currency] || 1)).formatCurrency(currency)}</span>
+                      </div>
+                      <Separator />
+                      <div className="p-4">
+                        <Button className="w-full" onClick={handleCheckout}>
+                          Proceed to Checkout
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </SheetContent>
+              </Sheet>
               <NotificationBell
                 currency={currency}
                 currentPage={currentPage}
               />
-              <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-                  <SheetTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={(currentPage === "/" || currentPage === `/?currency=${currency}`)  ? "text-white hover:bg-transparent hover:text-white " : "text-black"}
-                    >
-                      <div className="relative">
-                        <ShoppingCart className="h-5 w-5" />
-                        {totalItems > 0 && (
-                          <Badge
-                            className="absolute -top-2  -right-2 h-4 w-4 flex items-center justify-center p-2"
-                          >
-                            {totalItems}
-                          </Badge>
-                        )}
-                      </div>
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent className="flex flex-col h-screen">
-                    <SheetHeader>
-                      <SheetTitle>Your Cart</SheetTitle>
-                      <SheetDescription>Review your items before checkout</SheetDescription>
-                    </SheetHeader>
-                    <div className="flex-grow overflow-y-auto">
-                      {cart.length > 0 ? (
-                        <ul className="space-y-4">
-                          {cart.map((item) => (
-                            <li key={item?._id} className="flex items-center justify-between space-x-4">
-                              {/* Left Section: Image and Name */}
-                              <div className="flex items-center space-x-4">
-                                <img
-                                  src={item?.productId?.image || "https://via.placeholder.com/100"}
-                                  alt={item?.productId.name}
-                                  className="w-16 h-16 object-cover rounded"
-                                />
-                                <div>
-                                  <h4 className="font-medium mb-3 text-md">{item?.productId.name}</h4>
-                                  <NumberStepper
-                                  value={item?.quantity}
-                                  onChange={(newQuantity) => {
-                                      updateItemQuantity(item, newQuantity);
-                                  }}
-                                  min={0}
-                                  max={item?.productId.quantity}
-                                  step={1}  />
-                                </div>
-                              </div>
-
-                              {/* Right Section: Price */}
-                              <span className="font-medium mb-10 text-lg">
-                                {(item.productId.price * (exchangeRates[currency] || 1)).formatCurrency(currency)}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>Your cart is empty.</p>
-                      )}
-                    </div>
-                    {cart.length > 0 && (
-                      <div className="mt-auto">
-                        <div className="flex justify-between items-center p-4">
-                          <span className="font-medium">Total:</span>
-                          <span className="font-bold">{(totalPrice* (exchangeRates[currency] || 1)).formatCurrency(currency)}</span>
-                        </div>
-                        <Separator />
-                        <div className="p-4">
-                          <Button className="w-full" onClick={handleCheckout}>
-                            Proceed to Checkout
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </SheetContent>
-                </Sheet>
               <button
                 onClick={handleClick}
                 className={`${
@@ -382,15 +339,15 @@ export default function Navbar({ profilePageString, children }) {
                 }}
               >
                 <MenuItem onClick={() => navigate("/tourist-profile")}>My profile</MenuItem>
-                <MenuItem onClick={handleClose}>My bookings</MenuItem>
-                <MenuItem onClick={() => {
-                  handleClose();
-                  navigate("/wallet");
-                }}>Wallet</MenuItem>
-                <MenuItem onClick={() => {
-                  handleClose();
-                  navigate("/order");
-                }}>Orders</MenuItem>
+                <MenuItem onClick={handleClose}>My Wishlist</MenuItem>
+<MenuItem onClick={() => {
+  handleClose();
+  navigate("/bookmarks"); // Update this line
+}}>My Bookmarks</MenuItem>
+<MenuItem onClick={() => {
+  handleClose();
+  navigate("/preferences"); // Update this line
+}}>My Preferences</MenuItem>
                 <Separator />
                 <MenuItem onClick={() => {handleClose(); handleLogoutClick();}}>Sign out</MenuItem>
               </Menu>
@@ -440,3 +397,4 @@ export default function Navbar({ profilePageString, children }) {
     </>
   );
 }
+
